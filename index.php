@@ -4,7 +4,7 @@ Plugin Name: Dynamic Links in Menu Items
 Plugin URI: 
 Description: 
 Author: 
-Version: 0.0.1
+Version: 0.0.2
 Author URI: 
 */
 
@@ -12,10 +12,11 @@ if( is_admin() )
 	require dirname( __FILE__ ).'/admin.php';
 
 // testing only
-function dynamic_test(){
-	//dbug( func_get_args() );
+function dynamic_test( $post ){
+	// wp://dynamic_test/post/?category=$term&blog_title=$blog_title&secret_of_everything=42&json_data=[{"blog_id":"5"},{"dynamic_blog_id":"$blog_id"},{"$blog_id":"blog_id"}]&devo=potato&get_array[]=1&get_array[color]=blue&get_array[5] = five&get_array[$blog_id]=blog_id&get_array[blog_id]=$blog_id&get_array[post]=$post&pagename=$pagename&$pagename=$pagename
 	
-	return 'http://google.com/';
+	if( $post )
+		return get_permalink( $post->ID );
 }
 
 /*
@@ -30,6 +31,7 @@ function dynamic_nav_menu_clean_url( $good_protocol_url, $original_url, $_contex
 		return $good_protocol_url; 
 		
 	$parsed = parse_url( $original_url );
+	//dbug( $parsed, '$parsed' );
 	
 	$function = $parsed['host'];
 	
@@ -37,18 +39,40 @@ function dynamic_nav_menu_clean_url( $good_protocol_url, $original_url, $_contex
 	if( !is_callable($function) )
 		return 'dynamic_nav_menu_clean_url fail!';
 	
+	// this could all change
+	
+	// currently path is being used
 	$path = isset( $parsed['path'] ) ? array_filter( explode('/', $parsed['path']) ) : array();
-	//dbug( $path, '$path' );
-	
 	isset( $parsed['query'] ) ? parse_str( $parsed['query'], $query ) : $query = array();
-	//dbug( $query, '$query' );
 	
+	// parse query variables into function arguments
+	$query = dynamic_nav_parse_r( $query, $path );
+		
 	$good_protocol_url = call_user_func_array( $function, $query );
-	//dbug( $good_protocol_url );
 	
 	return $good_protocol_url;
 }
 add_filter( 'clean_url', 'dynamic_nav_menu_clean_url', 10, 3 );
+
+/*
+*	recursive function that checks for dynamic variables in url query
+*	@param
+*	@return
+*/
+function dynamic_nav_parse_r( $mixed ){
+	if( is_string($mixed) && (strpos($mixed, '$') === 0) && ($index = substr( $mixed, 1 )) && isset($GLOBALS[$index]) ){
+		$parsed = $GLOBALS[$index];
+	} elseif( is_string($mixed) && $json = json_decode($mixed) ){
+		$parsed = dynamic_nav_parse_r( $json );
+	} elseif( is_array($mixed) || is_object($mixed) ){
+		foreach( $mixed as $key=>$value )
+			$parsed[dynamic_nav_parse_r($key)] = dynamic_nav_parse_r($value);
+	} else {
+		$parsed = $mixed;
+	}
+	
+	return $parsed;
+}
 
 /*
 *
