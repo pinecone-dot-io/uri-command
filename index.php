@@ -1,15 +1,24 @@
 <?
 /*
-Plugin Name: Dynamic Links in Menu Items
+Plugin Name: URI COMMAND
 Plugin URI: 
 Description: 
 Author: 
-Version: 0.0.3
+Version: 0.0.4
 Author URI: 
 */
 
+define( 'URICOMMAND_VERSION', '0.0.4' );
+
+// no trailing slash
+if( !defined('URICOMMAND_PLUGIN_DIR') )
+	define( 'URICOMMAND_PLUGIN_DIR', dirname(__FILE__) );
+	
+if( !defined('URICOMMAND_PLUGIN_URL') )
+	define( 'URICOMMAND_PLUGIN_URL', plugins_url('', __FILE__) );
+	
 if( is_admin() )
-	require dirname( __FILE__ ).'/admin.php';
+	require URICOMMAND_PLUGIN_DIR.'/admin.php';
 
 // testing only
 function dynamic_test( $post ){
