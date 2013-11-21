@@ -4,11 +4,11 @@ Plugin Name: URI COMMAND
 Plugin URI: 
 Description: 
 Author: 
-Version: 0.0.4
+Version: 0.0.5
 Author URI: 
 */
 
-define( 'URICOMMAND_VERSION', '0.0.4' );
+define( 'URICOMMAND_VERSION', '0.0.5' );
 
 // no trailing slash
 if( !defined('URICOMMAND_PLUGIN_DIR') )
@@ -87,7 +87,7 @@ function dynamic_nav_parse( $original_url ){
 	
 	// @TODO make an option whehter to show wp:// in html, maybe for dev?
 	if( !is_callable($function) )
-		return 'dynamic_nav_menu_clean_url fail!';
+		return 'http://fail/';
 	
 	// this could all change
 	
