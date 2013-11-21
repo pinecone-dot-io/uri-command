@@ -4,7 +4,7 @@ Plugin Name: Dynamic Links in Menu Items
 Plugin URI: 
 Description: 
 Author: 
-Version: 0.0.2
+Version: 0.0.3
 Author URI: 
 */
 
@@ -19,23 +19,64 @@ function dynamic_test( $post ){
 		return get_permalink( $post->ID );
 }
 
+function dynamic_test_label( $post ){
+	$permalink =  get_the_title( $post->ID );
+	
+	return $permalink;
+}
+
 /*
 *	parse the uri and return permalink
+*	attached to 'clean_url' filter
 *	@param string
 *	@param string
 *	@param string
 *	@return string
 */
-function dynamic_nav_menu_clean_url( $good_protocol_url, $original_url, $_context ){
+function dynamic_nav_menu_clean_url( $good_protocol_url, $original_url, $_context = '' ){
 	if( $_context != 'display' || strpos($original_url, 'wp://') !== 0 )
 		return $good_protocol_url; 
 		
-	$parsed = parse_url( $original_url );
-	//dbug( $parsed, '$parsed' );
+	$good_protocol_url = dynamic_nav_parse( $original_url );
 	
+	return $good_protocol_url;
+}
+add_filter( 'clean_url', 'dynamic_nav_menu_clean_url', 10, 3 );
+
+/*
+*
+*/
+function dynamic_nav_menu_esc_html( $safe_text, $text ){
+	if( strpos($text, 'wp://') !== 0 )
+		return $safe_text; 
+	
+	$good_protocol_url = dynamic_nav_parse( $text );
+	
+	return $good_protocol_url;
+}
+add_filter( 'esc_html', 'dynamic_nav_menu_esc_html', 10, 2 );
+
+/*
+*
+*/
+function dynamic_nav_menu_the_title( $title, $post_id ){
+	if( strpos($title, 'wp://') !== 0 )
+		return $title; 
+	
+	$good_protocol_url = dynamic_nav_parse( $title );
+	
+	return $good_protocol_url;
+}
+add_filter( 'the_title', 'dynamic_nav_menu_the_title', 10, 2 );
+
+/*
+*
+*/
+function dynamic_nav_parse( $original_url ){
+	$parsed = parse_url( $original_url );
 	$function = $parsed['host'];
 	
-	// @TODO make an option whehter to show wp:// in htnml, maybe for dev?
+	// @TODO make an option whehter to show wp:// in html, maybe for dev?
 	if( !is_callable($function) )
 		return 'dynamic_nav_menu_clean_url fail!';
 	
@@ -47,12 +88,10 @@ function dynamic_nav_menu_clean_url( $good_protocol_url, $original_url, $_contex
 	
 	// parse query variables into function arguments
 	$query = dynamic_nav_parse_r( $query, $path );
-		
-	$good_protocol_url = call_user_func_array( $function, $query );
 	
+	$good_protocol_url = call_user_func_array( $function, $query );
 	return $good_protocol_url;
 }
-add_filter( 'clean_url', 'dynamic_nav_menu_clean_url', 10, 3 );
 
 /*
 *	recursive function that checks for dynamic variables in url query
@@ -60,22 +99,28 @@ add_filter( 'clean_url', 'dynamic_nav_menu_clean_url', 10, 3 );
 *	@return
 */
 function dynamic_nav_parse_r( $mixed ){
-	if( is_string($mixed) && (strpos($mixed, '$') === 0) && ($index = substr( $mixed, 1 )) && isset($GLOBALS[$index]) ){
-		$parsed = $GLOBALS[$index];
+	if( is_array($mixed) || is_object($mixed) ){
+		$parsed = array();
+		foreach( $mixed as $k=>$v ){
+			$key = dynamic_nav_parse_r( $k );
+			$val = dynamic_nav_parse_r( $v );
+			
+			// @TODO check that key is not array
+			$parsed[$key] = $val;
+		}
 	} elseif( is_string($mixed) && $json = json_decode($mixed) ){
 		$parsed = dynamic_nav_parse_r( $json );
-	} elseif( is_array($mixed) || is_object($mixed) ){
-		foreach( $mixed as $key=>$value )
-			$parsed[dynamic_nav_parse_r($key)] = dynamic_nav_parse_r($value);
-	} else {
+	} elseif( is_string($mixed) && (strpos($mixed, '$') === 0) && ($index = substr($mixed, 1)) && isset($GLOBALS[$index]) ){
+		$parsed = $GLOBALS[$index];
+	}  else {
 		$parsed = $mixed;
 	}
-	
+		
 	return $parsed;
 }
 
 /*
-*
+*	attached to `kses_allowed_protocols` filter
 *	@param array allowed protocols
 *	@return array
 */
