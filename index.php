@@ -43,9 +43,14 @@ function dynamic_test_label( $post ){
 *	@return string
 */
 function dynamic_nav_menu_clean_url( $good_protocol_url, $original_url, $_context = '' ){
-	if( $_context != 'display' || strpos($original_url, 'wp://') !== 0 )
+	// allow it to save to db without validating
+	if( in_array($_context, array('db')) && strpos($original_url, 'wp://') === 0 ) 
+		return $original_url;
+	
+	// don't try to parse non wp:// uris
+	if( !in_array($_context, array('display')) || strpos($original_url, 'wp://') !== 0 ) 
 		return $good_protocol_url; 
-		
+	
 	$good_protocol_url = dynamic_nav_parse( $original_url );
 	
 	return $good_protocol_url;
@@ -68,7 +73,7 @@ add_filter( 'esc_html', 'dynamic_nav_menu_esc_html', 10, 2 );
 /*
 *
 */
-function dynamic_nav_menu_the_title( $title, $post_id ){
+function dynamic_nav_menu_the_title( $title, $post_id = 0 ){
 	if( strpos($title, 'wp://') !== 0 )
 		return $title; 
 	
@@ -83,6 +88,7 @@ add_filter( 'the_title', 'dynamic_nav_menu_the_title', 10, 2 );
 */
 function dynamic_nav_parse( $original_url ){
 	$parsed = parse_url( $original_url );
+	
 	$function = $parsed['host'];
 	
 	// @TODO make an option whehter to show wp:// in html, maybe for dev?
@@ -99,6 +105,7 @@ function dynamic_nav_parse( $original_url ){
 	$query = dynamic_nav_parse_r( $query, $path );
 	
 	$good_protocol_url = call_user_func_array( $function, $query );
+	
 	return $good_protocol_url;
 }
 
