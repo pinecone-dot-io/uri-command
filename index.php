@@ -1,38 +1,7 @@
-<?
-/*
-Plugin Name: URI COMMAND
-Plugin URI: 
-Description: 
-Author: 
-Version: 0.0.5
-Author URI: 
-*/
-
-define( 'URICOMMAND_VERSION', '0.0.5' );
-
-// no trailing slash
-if( !defined('URICOMMAND_PLUGIN_DIR') )
-	define( 'URICOMMAND_PLUGIN_DIR', dirname(__FILE__) );
-	
-if( !defined('URICOMMAND_PLUGIN_URL') )
-	define( 'URICOMMAND_PLUGIN_URL', plugins_url('', __FILE__) );
+<?php
 	
 if( is_admin() )
-	require URICOMMAND_PLUGIN_DIR.'/admin.php';
-
-// testing only
-function dynamic_test( $post ){
-	// wp://dynamic_test/post/?category=$term&blog_title=$blog_title&secret_of_everything=42&json_data=[{"blog_id":"5"},{"dynamic_blog_id":"$blog_id"},{"$blog_id":"blog_id"}]&devo=potato&get_array[]=1&get_array[color]=blue&get_array[5] = five&get_array[$blog_id]=blog_id&get_array[blog_id]=$blog_id&get_array[post]=$post&pagename=$pagename&$pagename=$pagename
-	
-	if( $post )
-		return get_permalink( $post->ID );
-}
-
-function dynamic_test_label( $post ){
-	$permalink =  get_the_title( $post->ID );
-	
-	return $permalink;
-}
+	require __DIR__.'/admin.php';
 
 /*
 *	parse the uri and return permalink
@@ -59,6 +28,9 @@ add_filter( 'clean_url', 'dynamic_nav_menu_clean_url', 10, 3 );
 
 /*
 *
+*	@param string
+*	@param string
+*	@return
 */
 function dynamic_nav_menu_esc_html( $safe_text, $text ){
 	if( strpos($text, 'wp://') !== 0 )
@@ -72,6 +44,9 @@ add_filter( 'esc_html', 'dynamic_nav_menu_esc_html', 10, 2 );
 
 /*
 *
+*	@param string
+*	@param int
+*	@return
 */
 function dynamic_nav_menu_the_title( $title, $post_id = 0 ){
 	if( strpos($title, 'wp://') !== 0 )
@@ -85,34 +60,36 @@ add_filter( 'the_title', 'dynamic_nav_menu_the_title', 10, 2 );
 
 /*
 *
+*	@param string
+*	@return
 */
 function dynamic_nav_parse( $original_url ){
 	$parsed = parse_url( $original_url );
 	
-	$function = $parsed['host'];
-	
-	// @TODO make an option whehter to show wp:// in html, maybe for dev?
-	if( !is_callable($function) )
-		return 'http://fail/';
-	
+	$function = dynamic_nav_parse_r( $parsed['host'] );
 	// this could all change
 	
-	// currently path is being used
-	$path = isset( $parsed['path'] ) ? array_filter( explode('/', $parsed['path']) ) : array();
+	$path = isset( $parsed['path'] ) ? array_values( array_filter(explode('/', $parsed['path'])) ) : array();
 	isset( $parsed['query'] ) ? parse_str( $parsed['query'], $query ) : $query = array();
 	
 	// parse query variables into function arguments
-	$query = dynamic_nav_parse_r( $query, $path );
+	$query = dynamic_nav_parse_r( $query );
 	
-	$good_protocol_url = call_user_func_array( $function, $query );
+	if( is_callable($function) )
+		$good_protocol_url = call_user_func_array( $function, $query );
+	elseif( is_callable(array($function, $path[0])) )
+		$good_protocol_url = call_user_func_array( array($function, $path[0]), $query );
+	else
+		// @TODO make an option whether to show wp:// in html, maybe for dev?
+		return '#uri-command-fail';
 	
 	return $good_protocol_url;
 }
 
 /*
 *	recursive function that checks for dynamic variables in url query
-*	@param
-*	@return
+*	@param mixed
+*	@return mixed
 */
 function dynamic_nav_parse_r( $mixed ){
 	if( is_array($mixed) || is_object($mixed) ){

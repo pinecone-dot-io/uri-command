@@ -1,4 +1,6 @@
-<?
+<?php
+
+namespace uri_command;
 
 /*
 *	let wp:// protocols in menu items validate
@@ -8,7 +10,7 @@
 *	@param array
 *	@return NULL
 */
-function dynamic_nav_menu_item_update( $menu_id, $menu_item_db_id, $args ){
+function update_nav_menu_item( $menu_id, $menu_item_db_id, $args ){
 	$url = esc_url_raw( $args['menu-item-url'], array('wp') );
 	
 	if( $args['menu-item-url'] ){
@@ -19,4 +21,4 @@ function dynamic_nav_menu_item_update( $menu_id, $menu_item_db_id, $args ){
 	if( $url )
 		update_post_meta( $menu_item_db_id, '_menu_item_url', $url );
 }
-add_filter( 'wp_update_nav_menu_item', 'dynamic_nav_menu_item_update', 10, 3 );
+add_filter( 'wp_update_nav_menu_item', __NAMESPACE__.'\update_nav_menu_item', 10, 3 );
