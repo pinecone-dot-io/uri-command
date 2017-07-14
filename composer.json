@@ -1,0 +1,15 @@
+{
+    "name": "pinecone-dot-website/uri-command",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0+",
+    "authors": [
+        {
+            "name": "Eric Eaglstun",
+            "email": "postpostmodern@gmail.com"
+        }
+    ],
+    "autoload": {},
+    "require": {
+        "composer/installers": "~1.0"
+    }
+}

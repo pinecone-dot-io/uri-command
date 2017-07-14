@@ -4,7 +4,7 @@ Plugin Name:	URI COMMAND
 Plugin URI:		https://github.com/pinecone-dot-io/uri-command
 Description: 
 Author: 
-Version:		0.0.6
+Version:		0.1.0
 Author URI: 
 */
 
