@@ -64,7 +64,7 @@ function dynamic_nav_menu_the_title($title, $post_id = 0)
     
     return $good_protocol_url;
 }
-add_filter( 'the_title', 'dynamic_nav_menu_the_title', 10, 2 );
+add_filter( 'the_title', 'dynamic_nav_menu_the_title', 1, 2 );
 
 /**
 *
