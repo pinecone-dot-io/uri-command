@@ -2,13 +2,13 @@
 
 namespace uri_command;
 
-/*
-*	let wp:// protocols in menu items validate
-*	attached to `wp_update_nav_menu_item` action
-*	@param int
-*	@param int post id
-*	@param array
-*	@return NULL
+/**
+*   let wp:// protocols in menu items validate
+*   attached to `wp_update_nav_menu_item` action
+*   @param int
+*   @param int post id
+*   @param array
+*   @return NULL
 */
 function update_nav_menu_item($menu_id, $menu_item_db_id, $args)
 {
