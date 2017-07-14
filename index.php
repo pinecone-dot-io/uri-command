@@ -86,7 +86,7 @@ function dynamic_nav_parse($original_url)
     
     if (is_callable($function)) {
         $good_protocol_url = call_user_func_array( $function, $query );
-    } elseif (is_callable([$function, $path[0]])) {
+    } elseif ($path && is_callable([$function, $path[0]])) {
         $good_protocol_url = call_user_func_array( [$function, $path[0]], $query );
     } else { // @TODO make an option whether to show wp:// in html, maybe for dev?
         return '#uri-command-fail';
