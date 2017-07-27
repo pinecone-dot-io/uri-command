@@ -67,6 +67,12 @@ directory take precedence. For example, `/assets/screenshot-1.png` would win ove
 
 == Changelog ==
 
+= 0.2.0 =
+* Refactor to classes 
+
+= 0.1.0 =
+* Require php 5.4, filter priority changes
+
 = 0.0.6 =
 * Support classes/methods as callback
 

@@ -21,11 +21,6 @@ class Admin
     {
         $url = esc_url_raw( $args['menu-item-url'], array('wp') );
         
-        if ($args['menu-item-url']) {
-            //dbug( $args['menu-item-url'] );
-            //ddbug( $url );
-        }
-        
         if ($url) {
             update_post_meta( $menu_item_db_id, '_menu_item_url', $url );
         }

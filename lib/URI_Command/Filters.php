@@ -38,7 +38,7 @@ class Filters
     }
     
     /**
-    *
+    *   attached to `esc_html` filter
     *   @param string
     *   @param string
     *   @return
@@ -50,7 +50,6 @@ class Filters
         }
         
         $good_protocol_url = dynamic_nav_parse( $text );
-        ddbug($good_protocol_url);
 
         return $good_protocol_url;
     }
@@ -71,7 +70,7 @@ class Filters
     *   attached to `the_title` filter
     *   @param string
     *   @param int
-    *   @return
+    *   @return string html
     */
     function dynamic_nav_menu_the_title($title, $post_id = 0)
     {
@@ -80,7 +79,7 @@ class Filters
         }
         
         $good_protocol_url = dynamic_nav_parse( $title );
-        
+
         return $good_protocol_url;
     }
 }

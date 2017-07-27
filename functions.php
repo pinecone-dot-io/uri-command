@@ -24,8 +24,9 @@ function dynamic_nav_parse($original_url)
         $good_protocol_url = call_user_func_array( $function, $query );
     } elseif ($path && is_callable([$function, $path[0]])) {
         $good_protocol_url = call_user_func_array( [$function, $path[0]], $query );
-    } else { // @TODO make an option whether to show wp:// in html, maybe for dev?
-        return '#uri-command-fail';
+    } else {
+        // @TODO make an option whether to show wp:// in html, maybe for dev?
+        $good_protocol_url = '#uri-command-fail';
     }
     
     return $good_protocol_url;
