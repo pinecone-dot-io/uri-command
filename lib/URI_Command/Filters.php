@@ -81,7 +81,7 @@ class Filters
         }
 
         $good_protocol_url = dynamic_nav_parse( $wp_post->title, $wp_post );
-
+        
         return $good_protocol_url;
     }
 }

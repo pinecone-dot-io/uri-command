@@ -20,7 +20,7 @@ function dynamic_nav_parse($original_url, $wp_post = null)
     
     // parse query variables into function arguments
     $query = dynamic_nav_parse_r( $query );
-    
+
     if (is_callable($function)) {
         $good_protocol_url = call_user_func_array( $function, $query );
     } elseif ($path && is_callable([$function, $path[0]])) {
@@ -29,7 +29,7 @@ function dynamic_nav_parse($original_url, $wp_post = null)
         // @TODO make an option whether to show wp:// in html, maybe for dev?
         $good_protocol_url = '#uri-command-fail';
     }
-    
+
     return $good_protocol_url;
 }
 
