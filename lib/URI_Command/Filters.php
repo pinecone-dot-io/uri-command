@@ -9,7 +9,7 @@ class Filters
         add_filter( 'clean_url', [$this, 'dynamic_nav_menu_clean_url'], 10, 3 );
         add_filter( 'esc_html', [$this, 'dynamic_nav_menu_esc_html'], 10, 2 );
         add_filter( 'kses_allowed_protocols', [$this, 'dynamic_nav_menu_protocols'] );
-        add_filter( 'the_title', [$this, 'dynamic_nav_menu_the_title'], 1, 2 );
+        add_filter( 'nav_menu_item_title', [$this, 'dynamic_nav_menu_nav_menu_item_title'], 1, 10 );
     }
 
     /**
@@ -67,18 +67,20 @@ class Filters
     }
 
     /**
-    *   attached to `the_title` filter
+    *   attached to `nav_menu_item_title` filter
     *   @param string
+    *   @param WP_Post
+    *   @param object wp_nav_menu() arguments
     *   @param int
     *   @return string html
     */
-    function dynamic_nav_menu_the_title($title, $post_id = 0)
+    function dynamic_nav_menu_nav_menu_item_title($title, $wp_post, $args, $depth)
     {
-        if (strpos($title, 'wp://') !== 0) {
+        if ($wp_post->post_type !== 'nav_menu_item' || (strpos($title, 'wp://') !== 0)) {
             return $title;
         }
-        
-        $good_protocol_url = dynamic_nav_parse( $title );
+
+        $good_protocol_url = dynamic_nav_parse( $wp_post->title, $wp_post );
 
         return $good_protocol_url;
     }

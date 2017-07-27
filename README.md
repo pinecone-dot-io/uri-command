@@ -2,8 +2,8 @@
 Contributors: postpostmodern, pinecone-dot-io
 Donate link: https://cash.me/$EricEaglstun
 Tags:				comments, spam
-Requires at least:	3.0.1
-Tested up to:       4.8
+Requires at least:	4.4.0
+Tested up to:       4.8.0
 Stable tag:			0.2.0
 License:			GPLv2 or later
 License URI:		http://www.gnu.org/licenses/gpl-2.0.html
@@ -43,9 +43,9 @@ This section describes how to install the plugin and get it working.
 
 e.g.
 
-1. Upload `plugin-name.php` to the `/wp-content/plugins/` directory
+1. Upload `uri-command` to the plugins directory
 1. Activate the plugin through the 'Plugins' menu in WordPress
-1. Place `<?php do_action('plugin_name_hook' ); ?>` in your templates
+1. Create callbacks for custom link menu items in `wp-admin/nav-menus.php`
 
 == Frequently Asked Questions ==
 
@@ -68,7 +68,7 @@ directory take precedence. For example, `/assets/screenshot-1.png` would win ove
 == Changelog ==
 
 = 0.2.0 =
-* Refactor to classes 
+* Refactor to classes, attach main callback to `nav_menu_item_title` filter
 
 = 0.1.0 =
 * Require php 5.4, filter priority changes

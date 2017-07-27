@@ -5,9 +5,10 @@ namespace URI_Command;
 /**
 *
 *   @param string
-*   @return
+*   @param WP_Post
+*   @return string html
 */
-function dynamic_nav_parse($original_url)
+function dynamic_nav_parse($original_url, $wp_post = null)
 {
     $parsed = parse_url( $original_url );
     
