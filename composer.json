@@ -8,7 +8,14 @@
             "email": "postpostmodern@gmail.com"
         }
     ],
-    "autoload": {},
+    "autoload": {
+        "files": [
+            "functions.php"
+        ],
+        "psr-4": {
+            "URI_Command\\": "lib/URI_Command/"
+        }
+    },
     "require": {
         "php": ">=5.4",
         "composer/installers": "~1.0"
